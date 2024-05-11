@@ -1,0 +1,12 @@
+venv
+.vscode
+data
+models
+src
+tmp
+*/__pycache__
+
+**/*.mp3
+**/*.wav
+
+**/bot_key.py

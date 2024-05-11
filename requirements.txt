@@ -1,0 +1,14 @@
+--extra-index-url https://download.pytorch.org/whl/cu121
+
+torch==2.1.0
+torchvision==0.16.0
+torchaudio==2.1.0
+matplotlib==3.8.0
+torchmetrics==1.2.0
+torchinfo==1.8.0
+
+ipykernel==6.26.0
+omegaconf==2.3.0
+soundfile==0.12.1
+
+aiogram==3.6.0
