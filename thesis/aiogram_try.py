@@ -9,11 +9,11 @@ from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 
-import thesis.bot_key as bot_key
+from config_reader import config
 
 # Bot token can be obtained via https://t.me/BotFather
 # TOKEN = getenv("BOT_TOKEN")
-TOKEN = bot_key.BOT_TOKEN
+TOKEN = config.bot_token.get_secret_value()
 
 # All handlers should be attached to the Router (or Dispatcher)
 dp = Dispatcher()

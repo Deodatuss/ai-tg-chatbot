@@ -12,3 +12,4 @@ omegaconf==2.3.0
 soundfile==0.12.1
 
 aiogram==3.6.0
+pydantic-settings==2.2.1

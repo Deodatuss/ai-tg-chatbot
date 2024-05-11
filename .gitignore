@@ -9,4 +9,4 @@ tmp
 **/*.mp3
 **/*.wav
 
-**/bot_key.py
+**/.env
