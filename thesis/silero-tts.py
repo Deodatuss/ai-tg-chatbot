@@ -35,7 +35,8 @@ async def inference_tts(
     Input: loaded TTS model object
     Output: path of a saved audio file
 
-    Saves the file with torchaudio.save; use another function to read the audio file
+    Saves the file with torchaudio.save inside /data/{user_id_number}/generated/{user_id}_{file_id}.mp3
+    ; use another function to read the audio file
     """
     audio = model.apply_tts(
         text=text,
@@ -57,7 +58,7 @@ async def inference_tts(
 
 async def main() -> None:
     model, example_text = await load_model()
-    file_uri = await inference_tts(model, text="Та сам в ш+оке")
+    file_uri = await inference_tts(model)
 
 
 if __name__ == "__main__":
