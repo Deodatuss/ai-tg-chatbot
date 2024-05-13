@@ -9,6 +9,8 @@ from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart, Command
 from aiogram.types import Message
 
+import silero_tts, tokenizer
+
 from config_reader import config
 
 TOKEN = config.bot_token.get_secret_value()
