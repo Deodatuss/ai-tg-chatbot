@@ -5,6 +5,8 @@ import asyncio
 import logging
 import sys
 
+from pathlib import Path
+
 
 LANG = "ru"
 MODEL_ID = "v4_ru"
@@ -24,12 +26,15 @@ async def load_model(language=LANG, model_id=MODEL_ID, device=DEVICE):
         speaker=model_id,
     )
     model.to(device)
-    print("loaded")
     return model, example_text
 
 
 async def inference_tts(
-    model, text="В н+едрах т+ундры в+ыдры", speaker=SPEAKER, sample_rate=SAMPLE_RATE
+    model,
+    path: Path,
+    text,
+    speaker=SPEAKER,
+    sample_rate=SAMPLE_RATE,
 ) -> str:
     """
     Input: loaded TTS model object
@@ -44,7 +49,7 @@ async def inference_tts(
         sample_rate=SAMPLE_RATE,
     )
 
-    file_uri = "./example_saved3.mp3"
+    file_uri = path / "output.mp3"
 
     torchaudio.save(
         uri=file_uri,
