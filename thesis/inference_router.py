@@ -4,26 +4,46 @@ from pathlib import Path
 from aiogram import Router, F
 from aiogram.types import Message, FSInputFile
 from aiogram.fsm.context import FSMContext
-from aiogram.filters import Command, CommandObject
+from aiogram.filters import Command
 
 
-import silero_tts
+import silero_tts, tokenizer, constants
 from state_class import GenerationStages
 
 router = Router()
-DATA_PATH = Path("data/tts/")
+DATA_PATH = constants.DATA_PATH
 
 
-@router.message(GenerationStages.inference_mode, Command("stop"))
-async def stop_inference(
-    message: Message,
-    state: FSMContext,
-):
-    message.reply("Inference mode stopped.")
-    state.set_state(GenerationStages.setting_parameters)
+@router.message(Command("read"), GenerationStages.setting_parameters)
+async def get_ready_for_inference(message: Message, state: FSMContext):
+    await message.answer(
+        "Generation mode started. Send text message you want to read. Or /stop to stop."
+    )
+    await state.set_state(GenerationStages.inference_mode)
+
+
+@router.message(Command("stop"), GenerationStages.inference_mode)
+async def stop_inference(message: Message, state: FSMContext):
+    await message.answer("Generation mode stopped.")
+    await state.set_state(GenerationStages.setting_parameters)
 
 
 @router.message(GenerationStages.inference_mode, F.text)
+async def check_tokens_and_read(message: Message, state: FSMContext):
+    text_tokens = await tokenizer.count_tokenize_message(message, state)
+    is_enough = await tokenizer.is_enough_tokens(message, state, text_tokens)
+    user_tokens = await tokenizer.get_tokens(message, state)
+
+    if is_enough:
+        await tokenizer.update_tokens(message, state, text_tokens)
+        await read_text_with_tts(message, state)
+    else:
+        await message.answer(
+            f"Not enough tokens; You have {user_tokens} tokens but need {text_tokens} tokens."
+        )
+    await state.set_state(GenerationStages.setting_parameters)
+
+
 async def read_text_with_tts(message: Message, state: FSMContext):
     """
     Checks if there is enough tokens on the account; alerts if doesn't.
@@ -60,16 +80,9 @@ async def wrong_input(
     message: Message,
     state: FSMContext,
 ):
-    message.reply("Wrong input. Try to send simple text or send /stop command to stop.")
-
-
-@router.message(Command("read"), GenerationStages.setting_parameters)
-async def get_ready_for_inference(
-    message: Message,
-    state: FSMContext,
-):
-    message.reply("Send text message you want to read.")
-    state.set_state(GenerationStages.inference_mode)
+    await message.answer(
+        "Wrong input. Try to send simple text or send /stop command to stop."
+    )
 
 
 @router.message(Command("resend"))
