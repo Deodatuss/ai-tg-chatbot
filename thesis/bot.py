@@ -10,6 +10,8 @@ from aiogram.filters import CommandStart, Command, StateFilter
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
+from aiogram.utils.formatting import as_list
+
 
 import silero_tts
 import inference_router, tokens_router, db_handler
@@ -42,6 +44,11 @@ async def load_account(message: Message, state: FSMContext) -> None:
         await db_handler.load_user_info_to_state(message, state)
 
 
+@base_router.message(StateFilter(None))
+async def warn_to_start(message: Message) -> None:
+    await message.answer("Try to start the bot first with /start.")
+
+
 @base_router.message(CommandStart())
 async def start_doubled(message: Message, state: FSMContext) -> None:
     await message.answer(f"You've already started the bot")
@@ -65,17 +72,37 @@ async def choose_eng_model(message: Message, state: FSMContext):
     await message.answer("English model loaded")
 
 
+@base_router.message(Command("info"))
+async def show_user_parameters(message: Message, state: FSMContext):
+    user_data = await state.get_data()
+    info = [
+        f"Model language: {user_data['model_language']}.",
+        f"Your Tokens: {user_data['my_tokens']}",
+        f"Generations made: {user_data['my_gens']}",
+    ]
+
+    text = as_list(*info)
+    await message.answer(**text.as_kwargs())
+
+
 @base_router.message(Command("help"))
-async def wildcard_answer(message: Message, state: FSMContext):
-    await message.answer(
-        "Help section in progress. Don't mess up with a bot and no one will be hurt "
-        + "(including the bot itself: he's agonizing with errors)."
-    )
+async def help_answer(message: Message, state: FSMContext):
+    info = [
+        "Current available models:",
+        "ukrainian, chosen with /ua_model",
+        "english, chosen with /en_model",
+        "Help section in progress. Don't mess up with a bot and no one will be hurt",
+        "(including the bot itself: he will agonize with errors)",
+    ]
+    await message.answer()
 
 
 @base_router.message()
 async def wildcard_answer(message: Message, state: FSMContext):
-    await message.answer("I don't know how to respond... see /help for more info.")
+    await message.answer(
+        "I don't know how to respond... I either don't work with such message types, or command is not proper right now. "
+        + "See /help for more info.",
+    )
     await message.answer(f"Btw, your state is {await state.get_state()}")
 
 
