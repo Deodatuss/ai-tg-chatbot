@@ -26,7 +26,9 @@ base_router = Router()
 
 @base_router.message(CommandStart(), StateFilter(None))
 async def start_handler(message: Message, state: FSMContext) -> None:
-    await message.answer(f"Hello, {message.from_user.full_name}!")
+    await message.answer(
+        f"Hello, {message.from_user.full_name}! This bot can convert text messages into audio messages"
+    )
 
     await load_account(message, state)
 
@@ -60,7 +62,9 @@ async def choose_ukr_model(message: Message, state: FSMContext):
     new_model, _ = await silero_tts.load_model(language="ua", model_id="v4_ua")
     await state.update_data(chosen_model=new_model)
     await state.update_data(model_language="ua")
-    await message.answer("Ukraininan model loaded")
+    await message.answer(
+        "Ukraininan model loaded. Use /read to get into generation mode"
+    )
 
 
 @base_router.message(Command("en_model"), GenerationStages.setting_parameters)
@@ -69,7 +73,7 @@ async def choose_eng_model(message: Message, state: FSMContext):
     new_model, _ = await silero_tts.load_model(language="en", model_id="v3_en")
     await state.update_data(chosen_model=new_model)
     await state.update_data(model_language="en")
-    await message.answer("English model loaded")
+    await message.answer("English model loaded. Use /read to get into generation mode")
 
 
 @base_router.message(Command("info"))
@@ -91,10 +95,16 @@ async def help_answer(message: Message, state: FSMContext):
         "Current available models:",
         "ukrainian, chosen with /ua_model",
         "english, chosen with /en_model",
-        "Help section in progress. Don't mess up with a bot and no one will be hurt",
+        "",
+        "After choosing a model, use /read command to start one-message Generation mode. "
+        + "In this mode, your next text message will be read by the bot, and he will reply with audio soon.",
+        "This mode ends after one text message or after /stop. After that, you can change AI model, or use token commands.",
+        "",
+        "Help section still in progress. Don't mess up with a bot and no one will be hurt",
         "(including the bot itself: he will agonize with errors)",
     ]
-    await message.answer()
+    text = as_list(*info)
+    await message.answer(**text.as_kwargs())
 
 
 @base_router.message()

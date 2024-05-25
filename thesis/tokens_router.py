@@ -33,9 +33,18 @@ async def buy_tokens(message: Message, state: FSMContext):
     """
     kb = [
         [
-            InlineKeyboardButton(text="10 tokens – 0.1 $", callback_data="tokens-10"),
-            InlineKeyboardButton(text="100 tokens – 1 $", callback_data="tokens-100"),
-            InlineKeyboardButton(text="1000 tokens – 8 $", callback_data="tokens-1000"),
+            InlineKeyboardButton(
+                text="10 tokens – 0.0 $",
+                callback_data="tokens-10",
+            ),
+            InlineKeyboardButton(
+                text="100 tokens – 0.0 $",
+                callback_data="tokens-100",
+            ),
+            InlineKeyboardButton(
+                text="1000 tokens – 0.0 $",
+                callback_data="tokens-1000",
+            ),
         ],
     ]
     ikb = InlineKeyboardMarkup(inline_keyboard=kb)

@@ -83,8 +83,8 @@ async def read_text_with_tts(message: Message, state: FSMContext):
         await message.answer(
             "AI model expirienced a value error. "
             + "Your input message may have bad characters, "
-            + "or message language is not supported by chosen " 
-            + f"{user_data["model_language"]} model",
+            + "or message language is not supported by chosen "
+            + f"{user_data['model_language']} model",
         )
     else:
         await db_handler.increment_generations_for_user(message, state)
